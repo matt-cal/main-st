@@ -1,4 +1,5 @@
 import { User } from "./app";
+import { FavoriteDoc } from "./concepts/favorite";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friend";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
 import { Router } from "./framework/router";
@@ -36,6 +37,27 @@ export default class Responses {
     const to = requests.map((request) => request.to);
     const usernames = await User.idsToUsernames(from.concat(to));
     return requests.map((request, i) => ({ ...request, from: usernames[i], to: usernames[i + requests.length] }));
+  }
+
+  /**
+   * Convert FavoriteDoc into more readable format for the frontend by converting the owner id into username
+   */
+  static async favorite(favorite: FavoriteDoc | null) {
+    if (!favorite) {
+      return favorite;
+    }
+    const owner = await User.getUserById(favorite.owner);
+    const target = await User.getUserById(favorite.target);
+    return { ...favorite, owner: owner.username, target: target.username };
+  }
+
+  /**
+   * Same as {@link favorite} but for an array of FavoriteDoc
+   */
+  static async favorites(favorites: FavoriteDoc[]) {
+    const owners = await User.idsToUsernames(favorites.map((favorite) => favorite.owner));
+    const targets = await User.idsToUsernames(favorites.map((favorite) => favorite.target));
+    return favorites.map((favorite, i) => ({ ...favorite, owner: owners[i], target: targets[i] }));
   }
 }
 

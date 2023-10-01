@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, User, WebSession } from "./app";
+import { Favorite, Friend, Post, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -135,6 +135,33 @@ class Routes {
     const user = WebSession.getUser(session);
     const fromId = (await User.getUserByUsername(from))._id;
     return await Friend.rejectRequest(fromId, user);
+  }
+
+  @Router.get("/favorites")
+  async getFavorites(owner?: string) {
+    let favorites;
+    if (owner) {
+      const id = (await User.getUserByUsername(owner))._id;
+      favorites = await Favorite.getByOwner(id);
+    } else {
+      favorites = await Favorite.getFavorites({});
+    }
+    return Responses.favorites(favorites);
+  }
+
+  @Router.post("/favorites")
+  async createFavorite(session: WebSessionDoc, target: string) {
+    const user = WebSession.getUser(session);
+    const targetId = (await User.getUserByUsername(target))._id;
+    const created = await Favorite.create(user, targetId);
+    return { msg: created.msg, favorite: await Responses.favorite(created.favorite) };
+  }
+
+  @Router.delete("/favorites/:_id")
+  async deleteFavorite(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    await Favorite.isOwner(user, _id);
+    return Favorite.delete(_id);
   }
 }
 

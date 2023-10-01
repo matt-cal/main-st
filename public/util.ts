@@ -77,6 +77,24 @@ const operations: operation[] = [
     method: "DELETE",
     fields: { id: "input" },
   },
+  {
+    name: "Create Favorite",
+    endpoint: "/api/favorites",
+    method: "POST",
+    fields: { target: "input" },
+  },
+  {
+    name: "Get Favorites",
+    endpoint: "/api/favorites",
+    method: "GET",
+    fields: { owner: "input" },
+  },
+  {
+    name: "Delete Favorite",
+    endpoint: "/api/favorites/:id",
+    method: "DELETE",
+    fields: { id: "input" },
+  },
 ];
 
 // Do not edit below here.
