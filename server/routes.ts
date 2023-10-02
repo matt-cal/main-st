@@ -5,6 +5,7 @@ import { Router, getExpressRouter } from "./framework/router";
 import { Favorite, Friend, Like, Post, User, WebSession } from "./app";
 import { LikeType } from "./concepts/like";
 import { PostDoc, PostOptions } from "./concepts/post";
+import { TagType } from "./concepts/tag";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import Responses from "./responses";
@@ -199,6 +200,15 @@ class Routes {
     await Like.isOwner(user, _id);
     return Like.update(_id, type);
   }
+
+  @Router.get("/tags")
+  async getTags(target?: string, name?: string, type?: TagType) {}
+
+  @Router.post("/tags/:_id")
+  async createTag(session: WebSessionDoc, _id: ObjectId, type: TagType) {}
+
+  @Router.delete("/tags/:_id")
+  async deleteTag(session: WebSessionDoc, _id: ObjectId) {}
 }
 
 export default getExpressRouter(new Routes());
