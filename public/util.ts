@@ -95,6 +95,30 @@ const operations: operation[] = [
     method: "DELETE",
     fields: { id: "input" },
   },
+  {
+    name: "Create Like",
+    endpoint: "/api/likes/:postId",
+    method: "POST",
+    fields: { postId: "input", type: "input" },
+  },
+  {
+    name: "Get Likes",
+    endpoint: "/api/likes",
+    method: "GET",
+    fields: { type: "input", owner: "input" },
+  },
+  {
+    name: "Delete Like",
+    endpoint: "/api/likes/:id",
+    method: "DELETE",
+    fields: { id: "input" },
+  },
+  {
+    name: "Update Like",
+    endpoint: "/api/likes/:id",
+    method: "PATCH",
+    fields: { id: "input", type: "input" },
+  },
 ];
 
 // Do not edit below here.

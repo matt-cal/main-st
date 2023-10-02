@@ -2,7 +2,8 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Favorite, Friend, Post, User, WebSession } from "./app";
+import { Favorite, Friend, Like, Post, User, WebSession } from "./app";
+import { LikeType } from "./concepts/like";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -162,6 +163,41 @@ class Routes {
     const user = WebSession.getUser(session);
     await Favorite.isOwner(user, _id);
     return Favorite.delete(_id);
+  }
+
+  @Router.get("/likes")
+  async getLikes(type: LikeType, owner?: string) {
+    // need a method to get by type
+    let likes;
+    if (owner) {
+      const id = (await User.getUserByUsername(owner))._id;
+      likes = await Like.getByOwner(id, type);
+    } else {
+      likes = await Like.getLikes({ type: LikeType[type] });
+    }
+    return Responses.likes(likes);
+  }
+
+  @Router.post("/likes/:_id")
+  async createLike(session: WebSessionDoc, _id: ObjectId, type: LikeType) {
+    const user = WebSession.getUser(session);
+    const post = (await Post.getPosts({ _id }))[0]._id;
+    const created = await Like.create(user, post, type);
+    return { msg: created.msg, like: await Responses.like(created.like) };
+  }
+
+  @Router.delete("/likes/:_id")
+  async deleteLike(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    await Like.isOwner(user, _id);
+    return Like.delete(_id);
+  }
+
+  @Router.patch("/likes/:_id")
+  async updateLike(session: WebSessionDoc, _id: ObjectId, type: LikeType) {
+    const user = WebSession.getUser(session);
+    await Like.isOwner(user, _id);
+    return Like.update(_id, type);
   }
 }
 

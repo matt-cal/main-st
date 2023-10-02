@@ -1,6 +1,7 @@
 import { User } from "./app";
 import { FavoriteDoc } from "./concepts/favorite";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friend";
+import { LikeDoc } from "./concepts/like";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
 import { Router } from "./framework/router";
 
@@ -58,6 +59,25 @@ export default class Responses {
     const owners = await User.idsToUsernames(favorites.map((favorite) => favorite.owner));
     const targets = await User.idsToUsernames(favorites.map((favorite) => favorite.target));
     return favorites.map((favorite, i) => ({ ...favorite, owner: owners[i], target: targets[i] }));
+  }
+
+  /**
+   * Convert LikeDoc into more readable format for the frontend by converting the owner id into username
+   */
+  static async like(like: LikeDoc | null) {
+    if (!like) {
+      return like;
+    }
+    const owner = await User.getUserById(like.owner);
+    return { ...like, owner: owner.username };
+  }
+
+  /**
+   * Same as {@link like} but for an array of FavoriteDoc
+   */
+  static async likes(likes: LikeDoc[]) {
+    const owners = await User.idsToUsernames(likes.map((like) => like.owner));
+    return likes.map((like, i) => ({ ...like, owner: owners[i] }));
   }
 }
 
