@@ -166,17 +166,26 @@ class Routes {
     return Favorite.delete(_id);
   }
 
-  @Router.get("/likes")
-  async getLikes(type: LikeType, owner?: string) {
-    // need a method to get by type
-    let likes;
-    if (owner) {
-      const id = (await User.getUserByUsername(owner))._id;
-      likes = await Like.getByOwner(id, type);
-    } else {
-      likes = await Like.getLikes({ type: LikeType[type] });
-    }
+  @Router.get("/likes/:username")
+  async getUserLikes(type: LikeType, username: string) {
+    const id = (await User.getUserByUsername(username))._id;
+    const likes = await Like.getByOwner(id, type);
     return Responses.likes(likes);
+  }
+
+  @Router.get("/post/likes/:_id")
+  async getPostLikes(type: LikeType, _id: ObjectId) {
+    const id = (await Post.getPosts({ _id }))[0]._id;
+    const likes = await Like.getByPost(id, type);
+    return Responses.likes(likes);
+  }
+
+  // see if logged in user has liked given post
+  @Router.get("/user/liked/:_id")
+  async didUserLike(session: WebSessionDoc, type: LikeType, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    const postId = (await Post.getPosts({ _id }))[0]._id;
+    return await Like.didUserLike(postId, user, type);
   }
 
   @Router.post("/likes/:_id")

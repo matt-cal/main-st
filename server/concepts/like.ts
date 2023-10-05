@@ -38,7 +38,19 @@ export default class LikeConcept {
   }
 
   async getByOwner(owner: ObjectId, type: LikeType) {
-    return await this.getLikes({ owner, type: LikeType[type] });
+    return await this.getLikes({ owner, type });
+  }
+
+  async getByPost(post: ObjectId, type: LikeType) {
+    return await this.getLikes({ post, type });
+  }
+
+  /**
+   * Return true if like (or dislike) exists on given post with given owner, false otherwise
+   */
+  async didUserLike(post: ObjectId, owner: ObjectId, type: LikeType) {
+    const likes = await this.getLikes({ post, owner, type });
+    return likes.length > 0;
   }
 
   async delete(_id: ObjectId) {

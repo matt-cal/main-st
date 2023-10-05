@@ -102,10 +102,22 @@ const operations: operation[] = [
     fields: { postId: "input", type: "input" },
   },
   {
-    name: "Get Likes",
-    endpoint: "/api/likes",
+    name: "Get User Likes",
+    endpoint: "/api/likes/:username",
     method: "GET",
-    fields: { type: "input", owner: "input" },
+    fields: { type: "input", username: "input" },
+  },
+  {
+    name: "Get Post Likes",
+    endpoint: "/api/post/likes/:postId",
+    method: "GET",
+    fields: { type: "input", postId: "input" },
+  },
+  {
+    name: "Did User Like",
+    endpoint: "/api/user/liked/:postId",
+    method: "GET",
+    fields: { type: "input", postId: "input" },
   },
   {
     name: "Delete Like",
