@@ -58,6 +58,11 @@ export default class TagConcept {
     return tag.targets;
   }
 
+  async getTagsWithItem(item: ObjectId) {
+    const tags = await this.getTags({ targets: item });
+    return tags;
+  }
+
   async getByName(name: string) {
     const tag = await this.tags.readOne({ name });
     if (tag === null) {

@@ -168,6 +168,12 @@ const operations: operation[] = [
     fields: { tag: "input", id: "input" },
   },
   {
+    name: "Get Post Tags",
+    endpoint: "/api/posts/:id/tags",
+    method: "GET",
+    fields: { id: "input" },
+  },
+  {
     name: "Tag User",
     endpoint: "/api/users/:tag",
     method: "PATCH",
@@ -184,6 +190,12 @@ const operations: operation[] = [
     endpoint: "/api/users/:tag",
     method: "DELETE",
     fields: { tag: "input" },
+  },
+  {
+    name: "Get User Tags",
+    endpoint: "/api/users/:username/tags",
+    method: "GET",
+    fields: { username: "input" },
   },
 ];
 

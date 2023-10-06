@@ -38,6 +38,13 @@ class Routes {
     return await Tag.removeItem(tag, userId);
   }
 
+  @Router.get("/users/:username/tags")
+  async getUserTags(username: string) {
+    const userId = (await User.getUserByUsername(username))._id;
+    const tags = await Tag.getTagsWithItem(userId);
+    return tags.map((tag) => tag.name);
+  }
+
   @Router.post("/users")
   async createUser(session: WebSessionDoc, username: string, password: string) {
     WebSession.isLoggedOut(session);
@@ -94,6 +101,12 @@ class Routes {
     const userId = WebSession.getUser(session);
     await Post.isAuthor(userId, _id);
     return await Tag.removeItem(tag, _id);
+  }
+
+  @Router.get("/posts/:_id/tags")
+  async getPostTags(_id: ObjectId) {
+    const tags = await Tag.getTagsWithItem(_id);
+    return tags.map((tag) => tag.name);
   }
 
   @Router.post("/posts")
