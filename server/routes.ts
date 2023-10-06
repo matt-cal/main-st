@@ -26,6 +26,18 @@ class Routes {
     return await User.getUserByUsername(username);
   }
 
+  @Router.patch("/users/:tag")
+  async addUserTag(session: WebSessionDoc, tag: string) {
+    const userId = WebSession.getUser(session);
+    return await Tag.addItem(tag, userId);
+  }
+
+  @Router.delete("/users/:tag")
+  async removeUserTag(session: WebSessionDoc, tag: string) {
+    const userId = WebSession.getUser(session);
+    return await Tag.removeItem(tag, userId);
+  }
+
   @Router.post("/users")
   async createUser(session: WebSessionDoc, username: string, password: string) {
     WebSession.isLoggedOut(session);
@@ -70,22 +82,17 @@ class Routes {
     return Responses.posts(posts);
   }
 
-  @Router.get("/posts/:tag")
-  async getTaggedPosts(tag: string) {
-    const posts: PostDoc[] = [];
-    const items = await Tag.getItemsByTag(tag);
-    // get all items that are posts
-    for (const id of items) {
-      const post = await Post.getPost(id);
-      if (post !== null) {
-        posts.push(post);
-      }
-    }
-    return Responses.posts(posts);
+  @Router.patch("/posts/:_id/:tag")
+  async addPostTag(session: WebSessionDoc, _id: ObjectId, tag: string) {
+    const userId = WebSession.getUser(session);
+    await Post.isAuthor(userId, _id);
+    return await Tag.addItem(tag, _id);
   }
 
   @Router.delete("/posts/:_id/:tag")
-  async removePostTag(_id: ObjectId, tag: string) {
+  async removePostTag(session: WebSessionDoc, _id: ObjectId, tag: string) {
+    const userId = WebSession.getUser(session);
+    await Post.isAuthor(userId, _id);
     return await Tag.removeItem(tag, _id);
   }
 
@@ -250,9 +257,32 @@ class Routes {
     return await Tag.delete(_id);
   }
 
-  @Router.patch("/tags/:tag")
-  async tagItem(tag: string, itemId: ObjectId) {
-    return await Tag.addItem(tag, itemId);
+  @Router.get("/tags/:tag/posts")
+  async getTaggedPosts(tag: string) {
+    const posts: PostDoc[] = [];
+    const items = await Tag.getItemsByTag(tag);
+    // get all items that are posts
+    for (const id of items) {
+      const post = await Post.getPost(id);
+      if (post !== null) {
+        posts.push(post);
+      }
+    }
+    return Responses.posts(posts);
+  }
+
+  @Router.get("/tags/:tag/users")
+  async getTaggedUsers(tag: string) {
+    const users = [];
+    const items = await Tag.getItemsByTag(tag);
+    // get all items that are users
+    for (const id of items) {
+      const user = await User.getUser(id);
+      if (user !== null) {
+        users.push(user);
+      }
+    }
+    return users;
   }
 }
 

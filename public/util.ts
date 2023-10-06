@@ -138,10 +138,28 @@ const operations: operation[] = [
     fields: { name: "input" },
   },
   {
-    name: "Tag Item",
-    endpoint: "/api/tags/:tag",
+    name: "Get Tags",
+    endpoint: "/api/tags",
+    method: "GET",
+    fields: { name: "input" },
+  },
+  {
+    name: "Delete Tag",
+    endpoint: "/api/tags/:id",
+    method: "DELETE",
+    fields: { id: "input" },
+  },
+  {
+    name: "Tag Post",
+    endpoint: "/api/posts/:id/:tag",
     method: "PATCH",
-    fields: { tag: "input", itemId: "input" },
+    fields: { tag: "input", id: "input" },
+  },
+  {
+    name: "Get Tagged Posts",
+    endpoint: "/api/tags/:tag/posts",
+    method: "GET",
+    fields: { tag: "input" },
   },
   {
     name: "Untag Post",
@@ -150,22 +168,22 @@ const operations: operation[] = [
     fields: { tag: "input", id: "input" },
   },
   {
-    name: "Get Tags",
-    endpoint: "/api/tags",
-    method: "GET",
-    fields: { name: "input" },
+    name: "Tag User",
+    endpoint: "/api/users/:tag",
+    method: "PATCH",
+    fields: { tag: "input" },
   },
   {
-    name: "Get Tagged Posts",
-    endpoint: "/api/posts/:tag",
+    name: "Get Tagged Users",
+    endpoint: "/api/tags/:tag/users",
     method: "GET",
     fields: { tag: "input" },
   },
   {
-    name: "Delete Tag",
-    endpoint: "/api/tags/:id",
+    name: "Untag User",
+    endpoint: "/api/users/:tag",
     method: "DELETE",
-    fields: { id: "input" },
+    fields: { tag: "input" },
   },
 ];
 

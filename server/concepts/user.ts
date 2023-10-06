@@ -30,6 +30,17 @@ export default class UserConcept {
     return this.sanitizeUser(user);
   }
 
+  /**
+   * Return User with id if it exists, null otherwise
+   */
+  async getUser(_id: ObjectId) {
+    const user = await this.users.readOne({ _id });
+    if (user !== null) {
+      return this.sanitizeUser(user);
+    }
+    return null;
+  }
+
   async getUserByUsername(username: string) {
     const user = await this.users.readOne({ username });
     if (user === null) {

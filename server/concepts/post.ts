@@ -28,6 +28,9 @@ export default class PostConcept {
     return posts;
   }
 
+  /**
+   * Return Post with id if it exists, null otherwise
+   */
   async getPost(_id: ObjectId) {
     return await this.posts.readOne({ _id });
   }

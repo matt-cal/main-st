@@ -35,7 +35,7 @@ export default class TagConcept {
 
   async removeItem(name: string, item: ObjectId) {
     const tag = await this.getByName(name);
-    const newItemSet = tag.targets.filter((id) => id !== item); // keep all that are not item
+    const newItemSet = tag.targets.filter((id) => id.toString() !== item.toString()); // keep all that are not item
 
     await this.tags.updateOne({ _id: tag._id }, { targets: newItemSet });
     return { msg: "Removed tag successfully!" };
