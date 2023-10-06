@@ -28,6 +28,10 @@ export default class PostConcept {
     return posts;
   }
 
+  async getPost(_id: ObjectId) {
+    return await this.posts.readOne({ _id });
+  }
+
   async getByAuthor(author: ObjectId) {
     return await this.getPosts({ author });
   }
@@ -51,6 +55,14 @@ export default class PostConcept {
     if (post.author.toString() !== user.toString()) {
       throw new PostAuthorNotMatchError(user, _id);
     }
+  }
+
+  /**
+   * return true if post with _id exists, false otherwise
+   */
+  async postExists(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    return post !== null;
   }
 
   private sanitizeUpdate(update: Partial<PostDoc>) {

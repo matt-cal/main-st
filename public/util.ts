@@ -103,13 +103,13 @@ const operations: operation[] = [
   },
   {
     name: "Get User Likes",
-    endpoint: "/api/likes/:username",
+    endpoint: "/api/user/:username/likes",
     method: "GET",
     fields: { type: "input", username: "input" },
   },
   {
     name: "Get Post Likes",
-    endpoint: "/api/post/likes/:postId",
+    endpoint: "/api/post/:postId/likes",
     method: "GET",
     fields: { type: "input", postId: "input" },
   },
@@ -130,6 +130,42 @@ const operations: operation[] = [
     endpoint: "/api/likes/:id",
     method: "PATCH",
     fields: { id: "input", type: "input" },
+  },
+  {
+    name: "Create Tag",
+    endpoint: "/api/tags",
+    method: "POST",
+    fields: { name: "input" },
+  },
+  {
+    name: "Tag Item",
+    endpoint: "/api/tags/:tag",
+    method: "PATCH",
+    fields: { tag: "input", itemId: "input" },
+  },
+  {
+    name: "Untag Post",
+    endpoint: "/api/posts/:id/:tag",
+    method: "DELETE",
+    fields: { tag: "input", id: "input" },
+  },
+  {
+    name: "Get Tags",
+    endpoint: "/api/tags",
+    method: "GET",
+    fields: { name: "input" },
+  },
+  {
+    name: "Get Tagged Posts",
+    endpoint: "/api/posts/:tag",
+    method: "GET",
+    fields: { tag: "input" },
+  },
+  {
+    name: "Delete Tag",
+    endpoint: "/api/tags/:id",
+    method: "DELETE",
+    fields: { id: "input" },
   },
 ];
 

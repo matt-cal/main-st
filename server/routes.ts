@@ -2,10 +2,9 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Favorite, Friend, Like, Post, User, WebSession } from "./app";
+import { Favorite, Friend, Like, Post, Tag, User, WebSession } from "./app";
 import { LikeType } from "./concepts/like";
 import { PostDoc, PostOptions } from "./concepts/post";
-import { TagType } from "./concepts/tag";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import Responses from "./responses";
@@ -69,6 +68,25 @@ class Routes {
       posts = await Post.getPosts({});
     }
     return Responses.posts(posts);
+  }
+
+  @Router.get("/posts/:tag")
+  async getTaggedPosts(tag: string) {
+    const posts: PostDoc[] = [];
+    const items = await Tag.getItemsByTag(tag);
+    // get all items that are posts
+    for (const id of items) {
+      const post = await Post.getPost(id);
+      if (post !== null) {
+        posts.push(post);
+      }
+    }
+    return Responses.posts(posts);
+  }
+
+  @Router.delete("/posts/:_id/:tag")
+  async removePostTag(_id: ObjectId, tag: string) {
+    return await Tag.removeItem(tag, _id);
   }
 
   @Router.post("/posts")
@@ -163,17 +181,17 @@ class Routes {
   async deleteFavorite(session: WebSessionDoc, _id: ObjectId) {
     const user = WebSession.getUser(session);
     await Favorite.isOwner(user, _id);
-    return Favorite.delete(_id);
+    return await Favorite.delete(_id);
   }
 
-  @Router.get("/likes/:username")
+  @Router.get("/user/:username/likes")
   async getUserLikes(type: LikeType, username: string) {
     const id = (await User.getUserByUsername(username))._id;
     const likes = await Like.getByOwner(id, type);
     return Responses.likes(likes);
   }
 
-  @Router.get("/post/likes/:_id")
+  @Router.get("/post/:_id/likes")
   async getPostLikes(type: LikeType, _id: ObjectId) {
     const id = (await Post.getPosts({ _id }))[0]._id;
     const likes = await Like.getByPost(id, type);
@@ -200,24 +218,42 @@ class Routes {
   async deleteLike(session: WebSessionDoc, _id: ObjectId) {
     const user = WebSession.getUser(session);
     await Like.isOwner(user, _id);
-    return Like.delete(_id);
+    return await Like.delete(_id);
   }
 
   @Router.patch("/likes/:_id")
   async updateLike(session: WebSessionDoc, _id: ObjectId, type: LikeType) {
     const user = WebSession.getUser(session);
     await Like.isOwner(user, _id);
-    return Like.update(_id, type);
+    return await Like.update(_id, type);
   }
 
   @Router.get("/tags")
-  async getTags(target?: string, name?: string, type?: TagType) {}
+  async getTags(name?: string) {
+    let tags;
+    if (name) {
+      tags = [await Tag.getByName(name)];
+    } else {
+      tags = await Tag.getTags({});
+    }
+    return tags;
+  }
 
-  @Router.post("/tags/:_id")
-  async createTag(session: WebSessionDoc, _id: ObjectId, type: TagType) {}
+  @Router.post("/tags")
+  async createTag(name: string) {
+    const created = await Tag.create(name);
+    return { msg: created.msg, tag: created.tag };
+  }
 
   @Router.delete("/tags/:_id")
-  async deleteTag(session: WebSessionDoc, _id: ObjectId) {}
+  async deleteTag(_id: ObjectId) {
+    return await Tag.delete(_id);
+  }
+
+  @Router.patch("/tags/:tag")
+  async tagItem(tag: string, itemId: ObjectId) {
+    return await Tag.addItem(tag, itemId);
+  }
 }
 
 export default getExpressRouter(new Routes());
