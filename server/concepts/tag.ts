@@ -24,8 +24,12 @@ export default class TagConcept {
     const newItemSet: ObjectId[] = [];
 
     // did not want to work with .concat()
-    for (const item of tag.targets) {
-      newItemSet.push(item);
+    for (const target of tag.targets) {
+      // item should not already be in tag's targets
+      if (target.toString() === item.toString()) {
+        throw new TagAlreadyAppliedError(item, name);
+      }
+      newItemSet.push(target);
     }
     newItemSet.push(item);
 
@@ -75,5 +79,14 @@ export default class TagConcept {
     if (await this.tags.readOne({ name })) {
       throw new NotAllowedError(`Tag with name ${name} already exists!`);
     }
+  }
+}
+
+export class TagAlreadyAppliedError extends NotAllowedError {
+  constructor(
+    public readonly item: ObjectId,
+    public readonly tag: string,
+  ) {
+    super('{0} already has the tag  "{1}"!', item, tag);
   }
 }
